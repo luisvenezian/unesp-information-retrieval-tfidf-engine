@@ -3,6 +3,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import com.unesp.ri.Collection;
 import com.unesp.ri.Document;
+import com.unesp.ri.QueryEngine;
 import com.unesp.ri.Root;
 import static spark.Spark.get;
 
@@ -44,6 +45,13 @@ public final class App {
 
         //  do a query
         get("/search/:query", (request, response) -> {
+            String query = request.params(":query");    
+            QueryEngine queryRun = new QueryEngine(corpus, query);
+            return queryRun.getCossineSimilarity();
+        }, new Json());
+
+        //  do a query validation
+        get("/search/validate/:query", (request, response) -> {
             String query = request.params(":query");
             Document userQueryDocument = new Document(query, "user_query");
             userQueryDocument.setTFIDF(corpus.calculateTFIDF(userQueryDocument));
