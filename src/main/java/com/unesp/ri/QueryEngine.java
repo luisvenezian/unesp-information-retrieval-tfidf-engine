@@ -29,10 +29,6 @@ public class QueryEngine {
             cossineSimilarity.put(document.id, this.cossineSimilarityBetweenVectors(this.userProvidedDocument.getTFIDF(), document.getTFIDF()));
         }
 
-        // print cosine similarity
-        for (Map.Entry<String, Float> entry : cossineSimilarity.entrySet()) {
-            System.out.println("Key: " + entry.getKey() + " Value: " + entry.getValue());
-        }
        
         // order hashmap by rank values and return
         if (cossineSimilarity.size() == 1) {
