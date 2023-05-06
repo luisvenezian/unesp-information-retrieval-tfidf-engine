@@ -1,0 +1,7 @@
+com/unesp/ri/QueryEngine.class
+com/unesp/ri/Indexer.class
+com/unesp/ri/Collection.class
+com/unesp/ri/Document.class
+com/unesp/api/App.class
+com/unesp/api/Json.class
+com/unesp/ri/Root.class
