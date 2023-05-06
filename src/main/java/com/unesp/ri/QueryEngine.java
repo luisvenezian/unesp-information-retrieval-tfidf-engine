@@ -29,9 +29,6 @@ public class QueryEngine {
             cossineSimilarity.put(document.id, this.cossineSimilarityBetweenVectors(this.userProvidedDocument.getTFIDF(), document.getTFIDF()));
         }
 
-        System.out.println("entrou no calculateSimilarity UHUUUUUUU");
-        // PRINT SIZE OF COSINE SIMILARITY
-        System.out.println("SIZE OF COSINE SIMILARITY: " + cossineSimilarity.size());
         // print cosine similarity
         for (Map.Entry<String, Float> entry : cossineSimilarity.entrySet()) {
             System.out.println("Key: " + entry.getKey() + " Value: " + entry.getValue());
