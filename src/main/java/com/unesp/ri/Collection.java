@@ -10,11 +10,23 @@ public class Collection {
 
     public String name;
     public ArrayList<Document> documents = new ArrayList<Document>();
-    public Integer size;
 
-    public void addDocument(Document document) throws IOException {
-        document.calculateIndex();
-        this.documents.add(document);
+    public Document getDocument(String id) {
+        for (Document document : this.documents) {
+            if (document.id.equals(id)) {
+                return document;
+            }
+        }
+        return null;
+    }
+
+    public void addDocument(Document document) {
+        try {               
+            this.documents.add(document);
+            document.calculateIndex();
+        } catch (Exception e) {
+            System.out.println("Error: " + e.getMessage());
+        }
     }
 
     public Integer getSize() {
@@ -38,9 +50,15 @@ public class Collection {
 
     public float getIDF(String term) {
         // get inverse document frequency of a term in the collection
-        float SizeByfrequency = (float)this.getSize() / (float)this.getTermFrequency(term);
-        float idf = (float)(Math.log(SizeByfrequency) / Math.log(2)); 
-        return idf;
+        float termFrequencyInCollection = (float)this.getTermFrequency(term);
+        if (termFrequencyInCollection > 0) {
+            float SizeByfrequency = (float)this.getSize() / termFrequencyInCollection;
+            float idf = (float)(Math.log(SizeByfrequency) / Math.log(2)); 
+            return idf;
+        }
+        
+        return 0f;
+        
     }
 
     public void refreshCollection() throws IOException {
@@ -48,21 +66,22 @@ public class Collection {
 
         // refresh the tfidf of every term in every document in the collection
         for (Document document : this.documents) {
-            ArrayList<Float> tfidf = new ArrayList<Float>();
-
-            for (String term : document.getTermFrequencyMap().keySet()) {
-                // calculate tfidf for each term in the document
-                float tf = document.calculateTF(term);
-                float idf = this.getIDF(term);
-                float tfidfValue = tf * idf;
-                tfidf.add(tfidfValue);
-                
-                // print log
-                System.out.println("Loading TF("+tf+") * IDF("+idf+") in doc "+ document.id +" for term:" + term + ": " + tfidfValue);
-            }
-            
             // updates the tfidf of the document
-            document.setTFIDF(tfidf);
+            document.setTFIDF(calculateTFIDF(document));
         }
+    }
+
+    public ArrayList<Float> calculateTFIDF(Document doc){
+        ArrayList<Float> tfidf = new ArrayList<Float>();
+
+        for (String term : doc.getTermFrequencyMap().keySet()) {
+            // calculate tfidf for each term in the document
+            float tf = doc.calculateTF(term);
+            float idf = this.getIDF(term);
+            float tfidfValue = tf * idf;
+            tfidf.add(tfidfValue);
+        }
+
+        return tfidf;
     }
 }
