@@ -6,6 +6,7 @@ import com.unesp.ri.Document;
 import com.unesp.ri.QueryEngine;
 import com.unesp.ri.Root;
 import static spark.Spark.get;
+import static spark.Spark.post;
 
 public final class App {
     private App() {
@@ -62,9 +63,24 @@ public final class App {
             queryInfo.put("vector", userQueryDocument.getTFIDF());
             return queryInfo;
         }, new Json());
+
+        // add document from post body
+        post("/document/add/:documentId", (request, response) -> {
+            String documentId = request.params(":documentId");
+            String documentData = request.body();
+            Document document = new Document(documentData, documentId);
+            corpus.addDocument(document);
+            corpus.refreshCollection();
+
+            HashMap<String, Object> documentInfo = new HashMap<>();
+            documentInfo.put("id", document.id);
+            documentInfo.put("data", document.raw);
+            documentInfo.put("status", "added");
+            return documentInfo;
+        }, new Json());
         
         // get document
-        get("/document/:document", (request, response) -> {
+        get("/document/get/:document", (request, response) -> {
             String documentId = request.params(":document");
             Document document = corpus.getDocument(documentId);
             HashMap<String, Object> documentInfo = new HashMap<>();

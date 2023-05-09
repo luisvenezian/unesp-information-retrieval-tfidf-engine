@@ -41,6 +41,6 @@ public class Document {
     // returns the term frequency of a term in a document
     public Float calculateTF(String term){
         Integer tf = this.getTermFrequencyMap().get(term);
-        return (tf > 0) ? 1 + ((float)(Math.log(tf) / Math.log(2))) : 0;
+        return 1 + ((float)(Math.log(tf) / Math.log(2)));
     }
 }

@@ -30,7 +30,6 @@ public class QueryEngine {
         }
 
        
-        // order hashmap by rank values and return
         if (cossineSimilarity.size() == 1) {
             return cossineSimilarity;
         } else if (cossineSimilarity.size() == 0) {
@@ -38,6 +37,7 @@ public class QueryEngine {
             errorMap.put("error", -1.0f);
             return errorMap;
         } else {
+        // order hashmap by rank values and return
         return cossineSimilarity.entrySet()
             .stream()
             .sorted((e1, e2) -> e2.getValue().compareTo(e1.getValue()))
@@ -67,7 +67,7 @@ public class QueryEngine {
             v2Magnitude = (float)Math.sqrt(v2Magnitude);
             cossineSimilarity = dotProduct / (v1Magnitude * v2Magnitude);
         } catch (Exception e) {
-            cossineSimilarity = -1f;
+            cossineSimilarity = 0f;
             System.out.println("An error occurred: " + e.getMessage());
         }
         
