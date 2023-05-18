@@ -14,7 +14,7 @@ mvn clean compile exec:java
 ## How does it works? 
 It starts an API Spark that's at localhost:4567 where we can add, get, and search values, see the endpoints already created:
 
-#### Returns a query and returns a rank of documents based on TF-IDF Cossine Similarity 
+#### Returns a rank of documents based on TF-IDF Cossine Similarity 
 ```GET /search/:query```
 #### Returns a list of terms in the given query and its TF-IDF values
 ```GET /search/validate/:query```
