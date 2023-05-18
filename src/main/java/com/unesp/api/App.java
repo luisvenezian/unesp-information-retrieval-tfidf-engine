@@ -3,8 +3,8 @@ import java.io.IOException;
 import java.util.HashMap;
 import com.unesp.ri.Collection;
 import com.unesp.ri.Document;
-import com.unesp.ri.QueryEngine;
 import com.unesp.ri.Root;
+import com.unesp.ri.InvertedIndex;
 import static spark.Spark.get;
 import static spark.Spark.post;
 
@@ -13,10 +13,6 @@ public final class App {
         
     }
 
-    /**
-     * Initializes the application.
-     * @throws IOException
-     */
     public static void main(String[] args) throws IOException {
         
         // creating the collection
@@ -25,10 +21,10 @@ public final class App {
         root.addCollection(corpus);
 
         // creating the documents
-        Document d1 = new Document("To do is to be To be is to do", "d1") ;
-        Document d2 = new Document("To be or not to be. I am what I am.", "d2") ;
-        Document d3 = new Document("I think therefore I am. Do be do be do.", "d3") ;
-        Document d4 = new Document("Do do do, da da da Let it be, let it be.", "d4") ;
+        Document d1 = new Document("To do is to be To be is to do", "d1");
+        Document d2 = new Document("To be or not to be. I am what I am.", "d2");
+        Document d3 = new Document("I think therefore I am. Do be do be do.", "d3");
+        Document d4 = new Document("Do do do, da da da Let it be, let it be.", "d4");
 
         // adding the documents to the collection
         corpus.addDocument(d1);
@@ -36,32 +32,20 @@ public final class App {
         corpus.addDocument(d3);
         corpus.addDocument(d4);
 
-        // refreshing the collection
-        corpus.refreshCollection();
-
-        // printing the tfidf of each term in each document
-        for (Document document : corpus.documents) {
-            System.out.println("TFIDF of document " + document.id + ": " + document.getTFIDF());
-        }
+        // given a collection we can lazily calculate the idf of each term
+        InvertedIndex invertedIndex = new InvertedIndex(corpus);
 
         //  do a query
         get("/search/:query", (request, response) -> {
             String query = request.params(":query");    
-            QueryEngine queryRun = new QueryEngine(corpus, query);
-            return queryRun.getCossineSimilarity();
+            return invertedIndex.getRank(query);
         }, new Json());
 
         //  do a query validation
         get("/search/validate/:query", (request, response) -> {
             String query = request.params(":query");
-            Document userQueryDocument = new Document(query, "user_query");
-            userQueryDocument.setTFIDF(corpus.calculateTFIDF(userQueryDocument));
-
-            HashMap<String, Object> queryInfo = new HashMap<>();
-            queryInfo.put("id", userQueryDocument.id);
-            queryInfo.put("data", userQueryDocument.raw);
-            queryInfo.put("vector", userQueryDocument.getTFIDF());
-            return queryInfo;
+            Document queryDocument = new Document(query, "userQuery");
+            return invertedIndex.getDocumentTermsTFIDF(queryDocument);
         }, new Json());
 
         // add document from post body
@@ -70,24 +54,21 @@ public final class App {
             String documentData = request.body();
             Document document = new Document(documentData, documentId);
             corpus.addDocument(document);
-            corpus.refreshCollection();
 
-            HashMap<String, Object> documentInfo = new HashMap<>();
-            documentInfo.put("id", document.id);
-            documentInfo.put("data", document.raw);
-            documentInfo.put("status", "added");
-            return documentInfo;
+            return "Document has been added successfully. Don't forget to reindex the collection.";
         }, new Json());
-        
+
+        // run the indexer
+        get("/indexer/run", (request, response) -> {
+            invertedIndex.buildIndex(corpus);
+            return "Indexer has been run successfully.";
+        }, new Json());
+    
         // get document
-        get("/document/get/:document", (request, response) -> {
-            String documentId = request.params(":document");
+        get("/document/get/:documentId", (request, response) -> {
+            String documentId = request.params(":documentId");
             Document document = corpus.getDocument(documentId);
-            HashMap<String, Object> documentInfo = new HashMap<>();
-            documentInfo.put("id", document.id);
-            documentInfo.put("data", document.raw);
-            documentInfo.put("vector", document.getTFIDF());
-            return documentInfo;
+            return invertedIndex.getDocumentTermsTFIDF(document);
         }, new Json());
 
         // root
@@ -117,4 +98,5 @@ public final class App {
         }, new Json());
 
     }
+
 }

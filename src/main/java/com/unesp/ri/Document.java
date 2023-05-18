@@ -13,7 +13,6 @@ public class Document {
     public String id;
     private ArrayList<Float> tfidf = new ArrayList<Float>();
     
-    
     public void setTFIDF(ArrayList<Float> tfidf) {
         this.tfidf = tfidf;
     }

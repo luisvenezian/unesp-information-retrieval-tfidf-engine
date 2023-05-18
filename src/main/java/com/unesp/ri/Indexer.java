@@ -1,6 +1,3 @@
-/* A class that is responsable for indexing the documents and creating the inverted index for
-suporrting TF-IDF, BM25 or related algorithms. */
-
 package com.unesp.ri;
 import java.io.IOException;
 import java.util.ArrayList;

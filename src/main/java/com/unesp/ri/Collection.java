@@ -1,5 +1,4 @@
 package com.unesp.ri;
-import java.io.IOException;
 import java.util.ArrayList;
 
 
@@ -59,16 +58,6 @@ public class Collection {
         
         return 0f;
         
-    }
-
-    public void refreshCollection() throws IOException {
-        System.out.println("Refreshing collection: " + this.name);
-
-        // refresh the tfidf of every term in every document in the collection
-        for (Document document : this.documents) {
-            // updates the tfidf of the document
-            document.setTFIDF(calculateTFIDF(document));
-        }
     }
 
     public ArrayList<Float> calculateTFIDF(Document doc){
