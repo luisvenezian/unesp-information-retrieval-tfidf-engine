@@ -6,6 +6,7 @@ public class Document {
     public Document(String raw, String id) {
         this.raw = raw;
         this.id = id;
+        this.calculateIndex();
     }
 
     public String raw;
@@ -22,7 +23,6 @@ public class Document {
     }
 
     public Map<String, Integer> getTermFrequencyMap() {
-        this.calculateIndex();
         return this.termFrequencyMap;
     }
 

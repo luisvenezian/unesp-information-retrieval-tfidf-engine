@@ -1,6 +1,11 @@
 package com.unesp.api;
 import java.io.IOException;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.stream.Collectors;
+
 import com.unesp.ri.Collection;
 import com.unesp.ri.Document;
 import com.unesp.ri.Root;
@@ -35,17 +40,41 @@ public final class App {
         // given a collection we can lazily calculate the idf of each term
         InvertedIndex invertedIndex = new InvertedIndex(corpus);
 
-        //  do a query
+        // do a query
         get("/search/:query", (request, response) -> {
             String query = request.params(":query");    
-            return invertedIndex.getRank(query);
+            Map<String, Float> rank = invertedIndex.getRank(query);
+
+            return rank
+            .entrySet()
+            .stream()
+            .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
+            .collect(Collectors.toMap(
+                    Map.Entry::getKey,
+                    Map.Entry::getValue,
+                    (oldValue, newValue) -> oldValue,
+                    LinkedHashMap::new
+            ));
         }, new Json());
 
         //  do a query validation
         get("/search/validate/:query", (request, response) -> {
             String query = request.params(":query");
             Document queryDocument = new Document(query, "userQuery");
-            return invertedIndex.getDocumentTermsTFIDF(queryDocument);
+
+            return queryDocument.getTermFrequencyMap();
+            // Map<String, Float> unsortedRank = invertedIndex.getDocumentTermsTFIDF(queryDocument);
+
+            // return unsortedRank.entrySet()
+            // .stream()
+            // .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
+            // .collect(Collectors.toMap(
+            //         Map.Entry::getKey,
+            //         Map.Entry::getValue,
+            //         (oldValue, newValue) -> oldValue,
+            //         LinkedHashMap::new
+            // ));
+            
         }, new Json());
 
         // add document from post body

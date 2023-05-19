@@ -1,8 +1,6 @@
 package com.unesp.ri;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.TreeMap;
 
 public class InvertedIndex {
     public InvertedIndex(Collection collection) {
@@ -40,7 +38,7 @@ public class InvertedIndex {
         }
     }
 
-    public TreeMap<Float, String> getRank(String query){
+    public Map<String, Float> getRank(String query){
         Document queryDocument = new Document(query, "userQuery");
         Map<String, Integer> queryTermFrequency = queryDocument.getTermFrequencyMap();
         HashMap<String, Float> queryTermTFIDF = new HashMap<>();
@@ -63,7 +61,7 @@ public class InvertedIndex {
         // so now we have the tfidf of each term in the query and we only need to compare its
         // values with the tfidf of each term in the documents that contains a query term
         // and calculate the cosine similarity
-        TreeMap<Float, String> cossineSimilarityMap = new TreeMap<Float, String>(Collections.reverseOrder());
+        Map<String, Float> cossineSimilarityMap = new HashMap<>();
         for (String documentId : documentsThatContainsAQueryTerm.keySet()) {
             
             // get document object
@@ -88,7 +86,7 @@ public class InvertedIndex {
             }
 
             // add document id to a tree map with the cossine similarity as key
-            cossineSimilarityMap.put(cossineSimilarity, documentId);
+            cossineSimilarityMap.put(documentId, cossineSimilarity);
         }
 
         return cossineSimilarityMap;
