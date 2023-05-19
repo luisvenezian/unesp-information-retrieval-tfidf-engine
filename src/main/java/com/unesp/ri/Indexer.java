@@ -5,11 +5,12 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.Properties;
+import java.util.TreeSet;
+
 import edu.stanford.nlp.ling.*;
 import edu.stanford.nlp.pipeline.*;
 
 import java.util.HashMap;
-import java.util.List;
 
 public class Indexer {
 
@@ -31,13 +32,12 @@ public class Indexer {
         CoreDocument document = pipeline.processToCoreDocument(refinedInput);
         
         // read stop words txt file and put it in a list
-        List<String> stopWordList = new ArrayList<>();
-        
+        TreeSet<String> stopWordsList = new TreeSet<>();
         try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
             String line;
             while ((line = reader.readLine()) != null) {
                 // Add each word to the list
-                stopWordList.add(line);
+                stopWordsList.add(line); 
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -47,7 +47,7 @@ public class Indexer {
             String word = tok.word();
             if (word.length() > 0 && !word.matches("[0-9]+")) {
                 String lema = tok.lemma().toLowerCase();
-                if (!stopWordList.contains(lema) && lema.length() > 1) {
+                if (!stopWordsList.contains(lema) && lema.length() > 1) {
                     terms.add(lema);
                 }
             }

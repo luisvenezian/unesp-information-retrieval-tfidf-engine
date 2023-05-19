@@ -22,7 +22,6 @@ public class Collection {
     public void addDocument(Document document) {
         try {               
             this.documents.add(document);
-            document.calculateIndex();
         } catch (Exception e) {
             System.out.println("Error: " + e.getMessage());
         }

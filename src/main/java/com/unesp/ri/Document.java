@@ -12,15 +12,6 @@ public class Document {
     public String raw;
     public Map<String, Integer> termFrequencyMap;
     public String id;
-    private ArrayList<Float> tfidf = new ArrayList<Float>();
-    
-    public void setTFIDF(ArrayList<Float> tfidf) {
-        this.tfidf = tfidf;
-    }
-
-    public ArrayList<Float> getTFIDF() {
-        return this.tfidf;
-    }
 
     public Map<String, Integer> getTermFrequencyMap() {
         return this.termFrequencyMap;
